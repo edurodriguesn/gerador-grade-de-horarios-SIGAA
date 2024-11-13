@@ -38,12 +38,13 @@ Exemplo:
 > FISICA II, 4N12345
 
 Garanta que o seu arquivo `disciplinas.txt` estejam com esse formato, para que a aplicação funcione corretamente.
-<br><br><br>
+
 
 ### 2. Executar o arquivo `grade_horarios.py`
 ```bash
 python3 grade_horarios.py
 ```
+<br><br><br>
 
 ## Sugestões de Melhorias no Código
 
