@@ -18,7 +18,6 @@ build/
 # Arquivos de log e saída
 *.log
 *.out
-*.txt
 *.DS_Store
 
 # Configurações específicas de IDEs

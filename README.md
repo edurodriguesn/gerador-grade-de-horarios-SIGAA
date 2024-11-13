@@ -40,6 +40,11 @@ Exemplo:
 Garanta que o seu arquivo `disciplinas.txt` estejam com esse formato, para que a aplicação funcione corretamente.
 <br><br><br>
 
+### 2. Executar o arquivo `grade_horarios.py`
+```bash
+python3 grade_horarios.py
+```
+
 ## Sugestões de Melhorias no Código
 
 Aqui estão algumas sugestões para melhorar o desempenho, legibilidade e uso da aplicação.
