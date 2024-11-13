@@ -98,7 +98,7 @@ def ler_disciplinas_entrada(entrada_texto):
     return disciplinas
 
 # Configurar a interface do Streamlit
-st.title("Grade de Horários - Visualizador de Disciplinas")
+st.title("Grade de Horários - Visualizador de Disciplinas (by edurodriguesn)")
 
 entrada_texto = st.text_area("Insira as disciplinas e horários no formato 'Disciplina, Código(s)':", height=200)
 if st.button("Gerar Grade"):
