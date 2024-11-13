@@ -11,7 +11,7 @@ def interpretar_codigo(codigo):
 
 # Função para organizar a grade em um DataFrame, considerando conflitos de horários
 def organizar_grade(disciplinas):
-    dias_semana = range(2, 8)  # 2 = segunda-feira, 7 = sábado
+    dias_semana = range(2, 8)
     horarios_tarde = {f'T{hr}': '' for hr in range(1, 6)}
     horarios_noite = {f'N{hr}': '' for hr in range(1, 6)}
     grade = {f"{dia}": {**horarios_tarde, **horarios_noite} for dia in dias_semana}
@@ -52,22 +52,22 @@ def organizar_grade(disciplinas):
     df_grade.index = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
     return df_grade
 
-# Função para exibir a grade usando Plotly com visualização ampliada
+# Função para exibir a grade com cores personalizadas
 def exibir_grade_plotly(df_grade):
     df_grade = df_grade.T
     fig = go.Figure(data=[go.Table(
         header=dict(
             values=["Horários/Dias"] + list(df_grade.columns),
-            fill_color='paleturquoise',
-            align='center',
-            font=dict(size=14)
+            fill_color='#2D3748',   # Cor de fundo do cabeçalho
+            font=dict(color='white', size=14),  # Cor e tamanho da fonte do cabeçalho
+            align='center'
         ),
         cells=dict(
             values=[df_grade.index] + [df_grade[col].tolist() for col in df_grade.columns],
-            fill_color='lavender',
+            fill_color=[['#F7FAFC', '#E2E8F0'] * 5],  # Alternância de cor nas células
+            font=dict(color='#2D3748', size=12),  # Cor e tamanho da fonte das células
             align='center',
-            font=dict(size=12),
-            height=30  # Aumenta a altura das células
+            height=30
         ))
     ])
 
