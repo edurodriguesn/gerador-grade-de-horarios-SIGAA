@@ -1,0 +1,55 @@
+# Arquivos e diretórios de ambientes virtuais
+venv/
+.env/
+*.env
+*.venv
+
+# Dependências instaladas pelo pip
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Arquivos de log e saída
+*.log
+*.out
+*.txt
+*.DS_Store
+
+# Configurações específicas de IDEs
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Arquivos de configuração e caches de pytest
+.pytest_cache/
+.coverage
+.tox/
+
+# Diretório de cache pip
+pip-wheel-metadata/
+*.whl
+
+# Configurações de mypy
+.mypy_cache/
+
+# Configurações de coverage
+.coverage
+htmlcov/
+
+# Configurações do Jupyter Lab
+.jupyterlab/
+
+# Arquivos temporários do sistema operacional
+Thumbs.db
+.DS_Store
