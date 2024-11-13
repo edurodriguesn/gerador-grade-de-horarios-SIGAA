@@ -11,23 +11,16 @@ def interpretar_codigo(codigo):
 
 # Função para organizar a grade em um DataFrame, considerando conflitos de horários
 def organizar_grade(disciplinas):
-    # Definir apenas dias úteis de segunda a sábado
     dias_semana = range(2, 8)  # 2 = segunda-feira, 7 = sábado
     horarios_tarde = {f'T{hr}': '' for hr in range(1, 6)}
     horarios_noite = {f'N{hr}': '' for hr in range(1, 6)}
     grade = {f"{dia}": {**horarios_tarde, **horarios_noite} for dia in dias_semana}
-    
-    # Para armazenar quais horários já estão ocupados
     horarios_ocupados = {f"{dia}": {f"T{hr}": "" for hr in range(1, 6)} | {f"N{hr}": "" for hr in range(1, 6)} for dia in dias_semana}
-
-    # Para manter controle dos conflitos
     conflitos = {}
 
-    # Inserir disciplinas na estrutura, evitando conflitos de horários
     for disciplina, codigos in disciplinas.items():
-        # Verificar conflitos antes de alocar
         horarios_conflito = []
-        conflito_detectado = False  # Flag para identificar se houve um conflito
+        conflito_detectado = False
 
         for codigo in codigos:
             dia, turno, horarios = interpretar_codigo(codigo)
@@ -36,19 +29,17 @@ def organizar_grade(disciplinas):
                     chave_horario = f'{turno}{horario}'
                     if horarios_ocupados[str(dia)][chave_horario]:
                         disciplina_conflito = horarios_ocupados[str(dia)][chave_horario]
-                        st.write(f"Conflito detectado! A disciplina '{disciplina}' conflitante com '{disciplina_conflito}' no horário {dia} - {chave_horario}.")
-                        # Marca o horário como ocupado pela disciplina em conflito
+                        st.write(f"Conflito detectado! '{disciplina}' com '{disciplina_conflito}' no horário {dia} - {chave_horario}.")
                         horarios_conflito.append(chave_horario)
                         if disciplina_conflito not in conflitos:
                             conflitos[disciplina_conflito] = []
                         conflitos[disciplina_conflito].append(dia)
                         conflito_detectado = True
-        # Se houve conflito, a disciplina não será inserida na grade
+
         if conflito_detectado:
             st.write(f"A disciplina '{disciplina}' foi removida devido ao conflito com outra.")
-            continue  # Pula a adição da disciplina em caso de conflito
+            continue
 
-        # Alocar a disciplina que não tem conflitos
         for codigo in codigos:
             dia, turno, horarios = interpretar_codigo(codigo)
             if dia in dias_semana:
@@ -57,55 +48,61 @@ def organizar_grade(disciplinas):
                     if chave_horario not in horarios_conflito:
                         horarios_ocupados[str(dia)][chave_horario] = disciplina
 
-    # Converter para DataFrame e mapear os dias
     df_grade = pd.DataFrame.from_dict(horarios_ocupados, orient='index')
     df_grade.index = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
     return df_grade
 
-# Função para exibir a grade usando Plotly
+# Função para exibir a grade usando Plotly com visualização ampliada
 def exibir_grade_plotly(df_grade):
-    # Transpor o DataFrame para que os dias sejam as colunas e os horários as linhas
     df_grade = df_grade.T
-
-    # Exibindo a grade com as células vazias (em branco) no lugar de 'null'
     fig = go.Figure(data=[go.Table(
-        header=dict(values=["Horários/Dias"] + list(df_grade.columns),
-                    fill_color='paleturquoise',
-                    align='center'),
-        cells=dict(values=[df_grade.index] + [df_grade[col].tolist() for col in df_grade.columns],
-                   fill_color='lavender',
-                   align='center'))
+        header=dict(
+            values=["Horários/Dias"] + list(df_grade.columns),
+            fill_color='paleturquoise',
+            align='center',
+            font=dict(size=14)
+        ),
+        cells=dict(
+            values=[df_grade.index] + [df_grade[col].tolist() for col in df_grade.columns],
+            fill_color='lavender',
+            align='center',
+            font=dict(size=12),
+            height=30  # Aumenta a altura das células
+        ))
     ])
-    st.plotly_chart(fig)
+
+    # Ajuste o tamanho da visualização
+    fig.update_layout(
+        width=1000,  # Largura da tabela
+        height=600   # Altura da tabela
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
 
 # Função para ler as disciplinas a partir da entrada do usuário
 def ler_disciplinas_entrada(entrada_texto):
     disciplinas = {}
     for linha in entrada_texto.splitlines():
-        linha = linha.strip()  # Remove espaços em branco ao redor da linha
-        if not linha:  # Ignora linhas vazias
+        linha = linha.strip()
+        if not linha:
             continue
-        partes = linha.split(',')  # Divide nome e código usando a vírgula
-        if len(partes) != 2:  # Se a linha não tiver exatamente 2 partes, ignora
+        partes = linha.split(',')
+        if len(partes) != 2:
             st.write(f"A linha '{linha}' não está no formato esperado.")
             continue
-        nome_disciplina = partes[0].strip()  # O nome da disciplina
-        codigos = partes[1].strip().split()  # Os códigos vêm após a vírgula
+        nome_disciplina = partes[0].strip()
+        codigos = partes[1].strip().split()
         if nome_disciplina not in disciplinas:
             disciplinas[nome_disciplina] = []
         disciplinas[nome_disciplina].extend(codigos)
     return disciplinas
 
 # Configurar a interface do Streamlit
-st.title("Grade de Horários - Visualizador de Disciplinas (by edurodriguesn)")
+st.title("Grade de Horários - Visualizador de Disciplinas")
 
-# Entrada do usuário para adicionar disciplinas
 entrada_texto = st.text_area("Insira as disciplinas e horários no formato 'Disciplina, Código(s)':", height=200)
 if st.button("Gerar Grade"):
-    # Processar disciplinas da entrada do usuário
     disciplinas = ler_disciplinas_entrada(entrada_texto)
-    
-    # Organizar e exibir a grade
     df_grade = organizar_grade(disciplinas)
     st.write("### Visualização da Grade de Horários")
     exibir_grade_plotly(df_grade)
