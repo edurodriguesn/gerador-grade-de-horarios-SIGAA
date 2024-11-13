@@ -71,10 +71,13 @@ def exibir_grade_plotly(df_grade):
         ))
     ])
 
-    # Ajuste o tamanho da visualização
+    # Garantir que a tabela não seja afetada pelo modo escuro
     fig.update_layout(
         width=1000,  # Largura da tabela
-        height=600   # Altura da tabela
+        height=600,  # Altura da tabela
+        paper_bgcolor='white',  # Cor de fundo da página (garante que o fundo da tabela será branco)
+        plot_bgcolor='white',   # Cor de fundo do gráfico
+        font=dict(color='#2D3748'),  # Cor da fonte para garantir contraste
     )
     
     st.plotly_chart(fig, use_container_width=True)
@@ -98,7 +101,7 @@ def ler_disciplinas_entrada(entrada_texto):
     return disciplinas
 
 # Configurar a interface do Streamlit
-st.title("Grade de Horários - Visualizador de Disciplinas (by edurodriguesn)")
+st.title("Grade de Horários - Visualizador de Disciplinas")
 
 entrada_texto = st.text_area("Insira as disciplinas e horários no formato 'Disciplina, Código(s)':", height=200)
 if st.button("Gerar Grade"):
