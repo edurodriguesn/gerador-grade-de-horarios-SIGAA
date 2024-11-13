@@ -1,5 +1,6 @@
 # Gerador de Grade de Horários Para Código do SIGAA
 
+Caso desejo apenas acessar a funcionalidade, sem instalar, acesso link <https://gerador-grade-de-horarios-sigaa.streamlit.app/>
 ## Pré-requisitos
 
 Certifique-se de ter o seguinte instalado em seu sistema:
