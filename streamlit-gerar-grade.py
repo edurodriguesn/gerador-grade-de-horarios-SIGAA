@@ -52,15 +52,15 @@ def exibir_grade_plotly(df_grade):
     fig = go.Figure(data=[go.Table(
         header=dict(
             values=["Horários/Dias"] + list(df_grade.columns),
-            fill_color='paleturquoise',
-            align='center',
-            font=dict(size=14)
+            fill_color='white',  # Cor de fundo do cabeçalho
+            font=dict(color='black', size=14),  # Cor do texto do cabeçalho
+            align='center'
         ),
         cells=dict(
             values=[df_grade.index] + [df_grade[col].tolist() for col in df_grade.columns],
-            fill_color='lavender',
+            fill_color='white',  # Cor de fundo das células
+            font=dict(color='black', size=12),  # Cor do texto das células
             align='center',
-            font=dict(size=12),
             height=30
         ))
     ])
@@ -68,7 +68,7 @@ def exibir_grade_plotly(df_grade):
     # Ajuste o tamanho da visualização
     fig.update_layout(
         width=1000,  # Largura da tabela
-        height=1100   # Altura da tabela
+        height=1100  # Altura da tabela
     )
     
     st.plotly_chart(fig, use_container_width=True)
