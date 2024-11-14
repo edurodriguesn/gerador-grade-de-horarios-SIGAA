@@ -1,6 +1,6 @@
 # Gerador de Grade de Horários Para Código do SIGAA
 
-Caso deseje apenas acessar a funcionalidade, sem instalar, acesso link <https://gerador-grade-de-horarios-sigaa.streamlit.app/>
+Caso deseje apenas acessar a funcionalidade, sem instalar, acesse o link <https://gerador-grade-de-horarios-sigaa.streamlit.app/>
 ## Pré-requisitos
 
 Certifique-se de ter o seguinte instalado em seu sistema:
@@ -13,7 +13,7 @@ Certifique-se de ter o seguinte instalado em seu sistema:
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/DouglasEd/LeitorCartaoResposta.git
+git clone https://github.com/edurodriguesn/gerador-grade-de-horarios-SIGAA.git
 ```
 
 ### 2. Ao acessar, execute o script `env.sh` se estiver Linux
