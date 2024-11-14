@@ -52,9 +52,6 @@ def organizar_grade(disciplinas):
 import plotly.graph_objects as go
 import streamlit as st
 
-import plotly.graph_objects as go
-import streamlit as st
-
 def exibir_grade_plotly(df_grade):
     horarios_map = {
         'T1': '13:30', 'T2': '14:20', 'T3': '15:10', 'T4': '16:20', 'T5': '17:10',
@@ -89,13 +86,13 @@ def exibir_grade_plotly(df_grade):
 # Função para ler as disciplinas a partir da entrada do usuário
 def ler_disciplinas_entrada(entrada_texto):
     disciplinas = {}
-    # Dividir por quebras de linha e por "|"
+    # Dividir por quebras de linha e por "."
     linhas = entrada_texto.splitlines()
     for linha in linhas:
         if not linha:
             continue
-        # Aqui, vamos dividir pela barra "|" para obter cada disciplina
-        partes = linha.split('|')
+        # Aqui, vamos dividir pelo ponto (.) para obter cada disciplina
+        partes = linha.split('.')
         for parte in partes:
             parte = parte.strip()
             if not parte:
@@ -113,34 +110,39 @@ def ler_disciplinas_entrada(entrada_texto):
 
 # Opções predefinidas de disciplinas e horários com marcador de separação
 opcoes_predefinidas = {
-    "PROGRAMAÇÃO II": "2N5 3N12345|",
-    "FÍSICA II": "4N1234|",
-    "MATEMÁTICA DISCRETA": "2N1234|",
-    "AUTÔMATOS E LINGUAGENS FORMAIS": "6N1234|",
-    "METODOLOGIA DA PESQUISA E DO TRABALHO CIENTÍFICO": "6N1234|",
-    "TEORIA DA COMPUTAÇÃO": "6T2345|",
-    "TEORIA E PARADIGMAS DE LINGUAGENS DE PROGRAMAÇÃO": "2T2345|",
-    "ARQUITETURA DE COMPUTADORES": "4T12345 7T5|",
-    "ENGENHARIA DE SOFTWARE II": "2N12345 4N5|",
-    "BANCO DE DADOS II": "5N12345 6N5|",
-    "SISTEMAS OPERACIONAIS": "7N1234|",
-    "REDES DE COMPUTADORES I": "4N2345|",
-    "SISTEMAS DISTRIBUIDOS": "3N1234|",
-    "INTRODUÇÃO AO DIREITO": "4T1234|",
-    "COMPUTADOR SOCIEDADE E ÉTICA": "3T1234|",
-    "TÓPICOS EM ENGENHARIA DE SOFTWARE": "2T1234|",
-    "TÓPICOS EM COMPUTAÇÃO MÓVEL E SEM FIO": "6N1234|",
-    "CALCULO II": "6N12345 7N5|",
-    "EQUACOES DIFERENCIAIS E ORDINARIAS": "4T5 5T12345|",
-    "PROBABILIDADE E ESTATISTICA": "3T2345|"
-
+    "PROGRAMAÇÃO II": "2N5 3N12345.",
+    "FÍSICA II": "4N1234.",
+    "MATEMÁTICA DISCRETA": "2N1234.",
+    "AUTÔMATOS E LINGUAGENS FORMAIS": "6N1234.",
+    "METODOLOGIA DA PESQUISA E DO TRABALHO CIENTÍFICO": "6N1234.",
+    "TEORIA DA COMPUTAÇÃO": "6T2345.",
+    "TEORIA E PARADIGMAS DE LINGUAGENS DE PROGRAMAÇÃO": "2T2345.",
+    "ARQUITETURA DE COMPUTADORES": "4T12345 7T5.",
+    "ENGENHARIA DE SOFTWARE II": "2N12345 4N5.",
+    "BANCO DE DADOS II": "5N12345 6N5.",
+    "SISTEMAS OPERACIONAIS": "7N1234.",
+    "REDES DE COMPUTADORES I": "4N2345.",
+    "SISTEMAS DISTRIBUIDOS": "3N1234.",
+    "INTRODUÇÃO AO DIREITO": "4T1234.",
+    "COMPUTADOR SOCIEDADE E ÉTICA": "3T1234.",
+    "TÓPICOS EM ENGENHARIA DE SOFTWARE": "2T1234.",
+    "TÓPICOS EM COMPUTAÇÃO MÓVEL E SEM FIO": "6N1234.",
+    "CALCULO II": "6N12345 7N5.",
+    "EQUACOES DIFERENCIAIS E ORDINARIAS": "4T5 5T12345.",
+    "PROBABILIDADE E ESTATISTICA": "3T2345."
 }
 
 # Configurar a interface do Streamlit
 st.title("Grade de Horários - Visualizador de Disciplinas (by edurodriguesn)")
 
+# Mensagem recomendando usar no modo widescreen para dispositivos móveis
+st.markdown(
+    "<small><i>Em celulares é recomendável utilizar o site em modo widescreen.</i></small>",
+    unsafe_allow_html=True
+)
+
 # Campo de texto onde as disciplinas selecionadas são exibidas
-entrada_texto = st.text_area("Insira as disciplinas e horários no formato 'Disciplina, Código(s)|':", height=200)
+entrada_texto = st.text_area("Insira as disciplinas e horários no formato 'Disciplina, Código(s).':", height=200)
 
 # Criar checkboxes para as opções predefinidas em colunas
 disciplinas_selecionadas = []
@@ -165,19 +167,18 @@ for i, (disciplina, codigo) in enumerate(opcoes_predefinidas.items()):
 # Limpar quebras de linha extras
 entrada_texto = "\n".join(line for line in entrada_texto.splitlines() if line.strip())
 
-# Adicionar separador '|' para cada linha no campo de texto ao final
-entrada_texto = " | ".join(entrada_texto.splitlines())
+# Adicionar separador '.' para cada linha no campo de texto ao final
+entrada_texto = " . ".join(entrada_texto.splitlines())
 
 # Botão para gerar a grade
 if st.button("Gerar Grade"):
     disciplinas = ler_disciplinas_entrada(entrada_texto)
-    df_grade, conflitos_unicos = organizar_grade(disciplinas)
-    if conflitos_unicos:
-        st.write("### Conflitos de Horários Detectados:")
-        for conflito in conflitos_unicos:
-            st.write(f"{conflito[0]} conflita com {conflito[1]}")
-    st.write("### Visualização da Grade de Horários")
+    df_grade, conflitos = organizar_grade(disciplinas)
+
+    st.subheader("Grade de Horários")
     exibir_grade_plotly(df_grade)
 
-    # Exibir conflitos, se houver
-   
+    if conflitos:
+        st.subheader("Conflitos de Horários Encontrados")
+        for conflito in conflitos:
+            st.write(f"Conflito entre: {conflito[0]} e {conflito[1]}")
