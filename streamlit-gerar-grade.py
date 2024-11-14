@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-import io
-import base64
 
 # Função para interpretar o código da disciplina
 def interpretar_codigo(codigo):
@@ -59,8 +57,8 @@ def organizar_grade(disciplinas):
     df_grade.index = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
     return df_grade, conflitos
 
-# Função para gerar a tabela como base64
-def gerar_imagem_tabela_base64(df_grade):
+# Função para gerar e exibir a tabela diretamente no Streamlit
+def exibir_tabela_grade(df_grade):
     df_grade = df_grade.T
     fig = go.Figure(data=[go.Table(
         header=dict(
@@ -85,10 +83,7 @@ def gerar_imagem_tabela_base64(df_grade):
         font=dict(color='#2D3748'),
         margin=dict(l=50, r=50, t=50, b=50)  # Aumentar as margens para dar mais espaço
     )
-    # Gerar imagem em formato base64
-    img_bytes = fig.to_image(format='png')  # Ajustar para usar a função to_image sem kaleido
-    img_base64 = base64.b64encode(img_bytes).decode('utf-8')  # Codificar a imagem para base64
-    return f"data:image/png;base64,{img_base64}"
+    st.plotly_chart(fig)
 
 # Função para ler as disciplinas a partir da entrada do usuário
 def ler_disciplinas_entrada(entrada_texto):
@@ -116,16 +111,12 @@ if st.button("Gerar Grade"):
     disciplinas = ler_disciplinas_entrada(entrada_texto)
     df_grade, conflitos = organizar_grade(disciplinas)
     
-    # Gerar a imagem base64 da tabela
-    imagem_tabela_base64 = gerar_imagem_tabela_base64(df_grade)
+    # Exibir a tabela da grade de horários
+    exibir_tabela_grade(df_grade)
     
-    # Exibir a imagem da tabela
-    st.image(imagem_tabela_base64, caption="Grade de Horários", use_container_width=True)
-    
-    # Exibir conflitos de forma resumida abaixo da imagem
+    # Exibir conflitos de forma resumida abaixo da tabela
     if conflitos:
         st.write("Conflitos de horário detectados:")
         for disciplina, conflitos_disciplina in conflitos.items():
             st.write(f"Disciplina: {disciplina}")
-            # Exibe uma mensagem simplificada com todos os conflitos
             st.write(f"  - Conflitos: {', '.join(conflitos_disciplina)}")
