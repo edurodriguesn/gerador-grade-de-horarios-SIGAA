@@ -58,32 +58,34 @@ def organizar_grade(disciplinas):
     return df_grade, conflitos
 
 # Função para gerar e exibir a tabela diretamente no Streamlit
+# Função para gerar e exibir a tabela diretamente no Streamlit
 def exibir_tabela_grade(df_grade):
     df_grade = df_grade.T
     fig = go.Figure(data=[go.Table(
         header=dict(
             values=["Horários"] + list(df_grade.columns),
             fill_color='#2D3748',
-            font=dict(color='white', size=16),  # Tamanho da fonte aumentado
+            font=dict(color='white', size=18),  # Aumenta o tamanho da fonte
             align='center'
         ),
         cells=dict(
             values=[df_grade.index] + [df_grade[col].tolist() for col in df_grade.columns],
             fill_color=[['#F7FAFC', '#E2E8F0'] * (len(df_grade.index) // 2)],
-            font=dict(color='#2D3748', size=14),  # Tamanho da fonte aumentado
+            font=dict(color='#2D3748', size=16),  # Aumenta o tamanho da fonte das células
             align='center',
-            height=50  # Aumento da altura das células
+            height=60  # Aumenta a altura das células
         ))
     ])
     fig.update_layout(
-        width=1000,  # Largura aumentada
-        height=1100,  # Altura aumentada
+        width=1200,  # Aumenta a largura da tabela
+        height=1000,  # Ajusta a altura conforme necessário
         paper_bgcolor='white',
         plot_bgcolor='white',
         font=dict(color='#2D3748'),
-        margin=dict(l=50, r=50, t=50, b=50)  # Aumentar as margens para dar mais espaço
+        margin=dict(l=20, r=20, t=20, b=20)  # Reduz as margens para aproveitar mais espaço
     )
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True)  # Define para usar a largura do container do Streamlit
+
 
 # Função para ler as disciplinas a partir da entrada do usuário
 def ler_disciplinas_entrada(entrada_texto):
