@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import io
+import base64
+import plotly.io as pio
 
 # Função para interpretar o código da disciplina
 def interpretar_codigo(codigo):
@@ -52,8 +55,8 @@ def organizar_grade(disciplinas):
     df_grade.index = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
     return df_grade
 
-# Função para gerar a tabela como imagem
-def gerar_imagem_tabela(df_grade):
+# Função para gerar a tabela como imagem em base64
+def gerar_imagem_tabela_base64(df_grade):
     df_grade = df_grade.T
     fig = go.Figure(data=[go.Table(
         header=dict(
@@ -81,10 +84,14 @@ def gerar_imagem_tabela(df_grade):
         margin=dict(l=50, r=50, t=50, b=50)  # Aumentar as margens para dar mais espaço
     )
 
-    # Salvar a imagem da tabela
-    fig.write_image("tabela_grade_grande.png")
+    # Salvar a imagem como um objeto em memória (buffer)
+    img_bytes = pio.to_image(fig, format='png')
 
-    return "tabela_grade_grande.png"
+    # Converter para base64
+    img_base64 = base64.b64encode(img_bytes).decode('utf-8')
+
+    return img_base64
+
 # Função para ler as disciplinas a partir da entrada do usuário
 def ler_disciplinas_entrada(entrada_texto):
     disciplinas = {}
@@ -111,8 +118,8 @@ if st.button("Gerar Grade"):
     disciplinas = ler_disciplinas_entrada(entrada_texto)
     df_grade = organizar_grade(disciplinas)
     
-    # Gerar a imagem da tabela
-    imagem_tabela = gerar_imagem_tabela(df_grade)
+    # Gerar a imagem da tabela em base64
+    imagem_tabela_base64 = gerar_imagem_tabela_base64(df_grade)
     
-    # Exibir a imagem da tabela
-    st.image(imagem_tabela, caption="Grade de Horários", use_container_width=True)
+    # Exibir a imagem da tabela usando base64
+    st.markdown(f'<img src="data:image/png;base64,{imagem_tabela_base64}" alt="Grade de Horários"/>', unsafe_allow_html=True)
