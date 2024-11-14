@@ -52,36 +52,39 @@ def organizar_grade(disciplinas):
     df_grade.index = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
     return df_grade
 
-# Função para exibir a grade com cores personalizadas
-def exibir_grade_plotly(df_grade):
+# Função para gerar a tabela como imagem
+def gerar_imagem_tabela(df_grade):
     df_grade = df_grade.T
     fig = go.Figure(data=[go.Table(
         header=dict(
-            values=["Horários/Dias"] + list(df_grade.columns),
-            fill_color='#2D3748',   # Cor de fundo do cabeçalho
-            font=dict(color='white', size=14),  # Cor e tamanho da fonte do cabeçalho
+            values=["Horários"] + list(df_grade.columns),
+            fill_color='#2D3748',
+            font=dict(color='white', size=16),  # Tamanho da fonte aumentado
             align='center'
         ),
         cells=dict(
             values=[df_grade.index] + [df_grade[col].tolist() for col in df_grade.columns],
-            fill_color=[['#F7FAFC', '#E2E8F0'] * 5],  # Alternância de cor nas células
-            font=dict(color='#2D3748', size=12),  # Cor e tamanho da fonte das células
+            fill_color=[['#F7FAFC', '#E2E8F0'] * (len(df_grade.index) // 2)],
+            font=dict(color='#2D3748', size=14),  # Tamanho da fonte aumentado
             align='center',
-            height=30
+            height=50  # Aumento da altura das células
         ))
     ])
 
-    # Garantir que a tabela não seja afetada pelo modo escuro
+    # Ajustar o tamanho da figura para refletir maior proporção
     fig.update_layout(
-        width=1000,  # Largura da tabela
-        height=600,  # Altura da tabela
-        paper_bgcolor='white',  # Cor de fundo da página (garante que o fundo da tabela será branco)
-        plot_bgcolor='white',   # Cor de fundo do gráfico
-        font=dict(color='#2D3748'),  # Cor da fonte para garantir contraste
+        width=1000,  # Largura aumentada
+        height=1100,  # Altura aumentada
+        paper_bgcolor='white',
+        plot_bgcolor='white',
+        font=dict(color='#2D3748'),
+        margin=dict(l=50, r=50, t=50, b=50)  # Aumentar as margens para dar mais espaço
     )
-    
-    st.plotly_chart(fig, use_container_width=True)
 
+    # Salvar a imagem da tabela
+    fig.write_image("tabela_grade_grande.png")
+
+    return "tabela_grade_grande.png"
 # Função para ler as disciplinas a partir da entrada do usuário
 def ler_disciplinas_entrada(entrada_texto):
     disciplinas = {}
@@ -101,11 +104,15 @@ def ler_disciplinas_entrada(entrada_texto):
     return disciplinas
 
 # Configurar a interface do Streamlit
-st.title("Grade de Horários - Visualizador de Disciplinas")
+st.title("Grade de Horários - Visualizador de Disciplinas (by edurodriguesn)")
 
 entrada_texto = st.text_area("Insira as disciplinas e horários no formato 'Disciplina, Código(s)':", height=200)
 if st.button("Gerar Grade"):
     disciplinas = ler_disciplinas_entrada(entrada_texto)
     df_grade = organizar_grade(disciplinas)
-    st.write("### Visualização da Grade de Horários")
-    exibir_grade_plotly(df_grade)
+    
+    # Gerar a imagem da tabela
+    imagem_tabela = gerar_imagem_tabela(df_grade)
+    
+    # Exibir a imagem da tabela
+    st.image(imagem_tabela, caption="Grade de Horários", use_container_width=True)
