@@ -75,16 +75,18 @@ def gerar_imagem_tabela(df_grade):
     fig.update_layout(
         width=1000,  # Largura aumentada
         height=1100,  # Altura aumentada
-        paper_bgcolor='white',
-        plot_bgcolor='white',
+        paper_bgcolor='white',  # Fundo branco para evitar interferência do tema do navegador
+        plot_bgcolor='white',  # Fundo da área de plotagem também branco
         font=dict(color='#2D3748'),
-        margin=dict(l=50, r=50, t=50, b=50)  # Aumentar as margens para dar mais espaço
+        margin=dict(l=50, r=50, t=50, b=50),  # Aumentar as margens para dar mais espaço
     )
 
     # Salvar a imagem da tabela
-    fig.write_image("tabela_grade_grande.png")
+    caminho_imagem = "tabela_grade_grande.png"
+    fig.write_image(caminho_imagem)
 
-    return "tabela_grade_grande.png"
+    return caminho_imagem
+
 # Função para ler as disciplinas a partir da entrada do usuário
 def ler_disciplinas_entrada(entrada_texto):
     disciplinas = {}
