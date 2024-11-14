@@ -3,14 +3,21 @@ import pandas as pd
 import plotly.graph_objects as go
 import io
 import base64
-import plotly.io as pio
 
 # Função para interpretar o código da disciplina
 def interpretar_codigo(codigo):
+    dias = {
+        2: 'Segunda-feira',
+        3: 'Terça-feira',
+        4: 'Quarta-feira',
+        5: 'Quinta-feira',
+        6: 'Sexta-feira',
+        7: 'Sábado'
+    }
     dia = int(codigo[0])
     turno = codigo[1]
     horarios = list(map(int, codigo[2:]))
-    return dia, turno, horarios
+    return dias[dia], turno, horarios
 
 # Função para organizar a grade em um DataFrame, considerando conflitos de horários
 def organizar_grade(disciplinas):
@@ -22,40 +29,37 @@ def organizar_grade(disciplinas):
     conflitos = {}
 
     for disciplina, codigos in disciplinas.items():
-        horarios_conflito = []
-        conflito_detectado = False
+        conflitos_disciplina = []  # Lista para armazenar todos os conflitos dessa disciplina
 
         for codigo in codigos:
             dia, turno, horarios = interpretar_codigo(codigo)
-            if dia in dias_semana:
+            dia_numero = list(dias_semana)[list(dias_semana).index(int(codigo[0]))]
+            if dia_numero in dias_semana:
                 for horario in horarios:
                     chave_horario = f'{turno}{horario}'
-                    if horarios_ocupados[str(dia)][chave_horario]:
-                        disciplina_conflito = horarios_ocupados[str(dia)][chave_horario]
-                        st.write(f"Conflito detectado! '{disciplina}' com '{disciplina_conflito}' no horário {dia} - {chave_horario}.")
-                        horarios_conflito.append(chave_horario)
-                        if disciplina_conflito not in conflitos:
-                            conflitos[disciplina_conflito] = []
-                        conflitos[disciplina_conflito].append(dia)
-                        conflito_detectado = True
+                    if horarios_ocupados[str(dia_numero)][chave_horario]:
+                        disciplina_conflito = horarios_ocupados[str(dia_numero)][chave_horario]
+                        conflitos_disciplina.append(f"Conflito com '{disciplina_conflito}' no horário {dia} - {chave_horario}")
 
-        if conflito_detectado:
-            st.write(f"A disciplina '{disciplina}' foi removida devido ao conflito com outra.")
-            continue
+        if conflitos_disciplina:
+            # Se houver conflitos, salva todos eles para essa disciplina
+            conflitos[disciplina] = conflitos_disciplina
+            continue  # Se houver conflito, essa disciplina será ignorada
 
+        # Se não houver conflitos, preenche a grade com a disciplina
         for codigo in codigos:
             dia, turno, horarios = interpretar_codigo(codigo)
-            if dia in dias_semana:
+            dia_numero = list(dias_semana)[list(dias_semana).index(int(codigo[0]))]
+            if dia_numero in dias_semana:
                 for horario in horarios:
                     chave_horario = f'{turno}{horario}'
-                    if chave_horario not in horarios_conflito:
-                        horarios_ocupados[str(dia)][chave_horario] = disciplina
+                    horarios_ocupados[str(dia_numero)][chave_horario] = disciplina
 
     df_grade = pd.DataFrame.from_dict(horarios_ocupados, orient='index')
     df_grade.index = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
-    return df_grade
+    return df_grade, conflitos
 
-# Função para gerar a tabela como imagem em base64
+# Função para gerar a tabela como base64
 def gerar_imagem_tabela_base64(df_grade):
     df_grade = df_grade.T
     fig = go.Figure(data=[go.Table(
@@ -73,8 +77,6 @@ def gerar_imagem_tabela_base64(df_grade):
             height=50  # Aumento da altura das células
         ))
     ])
-
-    # Ajustar o tamanho da figura para refletir maior proporção
     fig.update_layout(
         width=1000,  # Largura aumentada
         height=1100,  # Altura aumentada
@@ -83,14 +85,10 @@ def gerar_imagem_tabela_base64(df_grade):
         font=dict(color='#2D3748'),
         margin=dict(l=50, r=50, t=50, b=50)  # Aumentar as margens para dar mais espaço
     )
-
-    # Salvar a imagem como um objeto em memória (buffer)
-    img_bytes = pio.to_image(fig, format='png')
-
-    # Converter para base64
-    img_base64 = base64.b64encode(img_bytes).decode('utf-8')
-
-    return img_base64
+    # Gerar imagem em formato base64
+    img_bytes = fig.to_image(format='png')  # Ajustar para usar a função to_image sem kaleido
+    img_base64 = base64.b64encode(img_bytes).decode('utf-8')  # Codificar a imagem para base64
+    return f"data:image/png;base64,{img_base64}"
 
 # Função para ler as disciplinas a partir da entrada do usuário
 def ler_disciplinas_entrada(entrada_texto):
@@ -116,10 +114,18 @@ st.title("Grade de Horários - Visualizador de Disciplinas (by edurodriguesn)")
 entrada_texto = st.text_area("Insira as disciplinas e horários no formato 'Disciplina, Código(s)':", height=200)
 if st.button("Gerar Grade"):
     disciplinas = ler_disciplinas_entrada(entrada_texto)
-    df_grade = organizar_grade(disciplinas)
+    df_grade, conflitos = organizar_grade(disciplinas)
     
-    # Gerar a imagem da tabela em base64
+    # Gerar a imagem base64 da tabela
     imagem_tabela_base64 = gerar_imagem_tabela_base64(df_grade)
     
-    # Exibir a imagem da tabela usando base64
-    st.markdown(f'<img src="data:image/png;base64,{imagem_tabela_base64}" alt="Grade de Horários"/>', unsafe_allow_html=True)
+    # Exibir a imagem da tabela
+    st.image(imagem_tabela_base64, caption="Grade de Horários", use_container_width=True)
+    
+    # Exibir conflitos de forma resumida abaixo da imagem
+    if conflitos:
+        st.write("Conflitos de horário detectados:")
+        for disciplina, conflitos_disciplina in conflitos.items():
+            st.write(f"Disciplina: {disciplina}")
+            # Exibe uma mensagem simplificada com todos os conflitos
+            st.write(f"  - Conflitos: {', '.join(conflitos_disciplina)}")
