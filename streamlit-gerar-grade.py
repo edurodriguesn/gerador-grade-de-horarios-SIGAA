@@ -49,6 +49,12 @@ def organizar_grade(disciplinas):
     return df_grade, conflitos_unicos
 
 # Função para exibir a grade usando Plotly com visualização ampliada
+import plotly.graph_objects as go
+import streamlit as st
+
+import plotly.graph_objects as go
+import streamlit as st
+
 def exibir_grade_plotly(df_grade):
     horarios_map = {
         'T1': '13:30', 'T2': '14:20', 'T3': '15:10', 'T4': '16:20', 'T5': '17:10',
@@ -62,18 +68,23 @@ def exibir_grade_plotly(df_grade):
             values=["Horários"] + list(df_grade.columns),
             fill_color='white',
             font=dict(color='black', size=14),
-            align='center'
+            align='center',
+            line_color='black'  # Define a cor preta para as bordas do cabeçalho
         ),
         cells=dict(
             values=[df_grade.index] + [df_grade[col].tolist() for col in df_grade.columns],
             fill_color='white',
             font=dict(color='black', size=12),
             align='center',
-            height=30
+            height=30,
+            line_color='black'  # Define a cor preta para as bordas das células
         ))
     ])
+    
+    # Atualizar layout para o gráfico
     fig.update_layout(width=1000, height=1100)
     st.plotly_chart(fig, use_container_width=True)
+
 
 # Função para ler as disciplinas a partir da entrada do usuário
 def ler_disciplinas_entrada(entrada_texto):
@@ -103,17 +114,26 @@ def ler_disciplinas_entrada(entrada_texto):
 # Opções predefinidas de disciplinas e horários com marcador de separação
 opcoes_predefinidas = {
     "PROGRAMAÇÃO II": "2N5 3N12345|",
-    "FÍSICA II": "4N123455|",
-    "MATEMÁTICA DISCRETA": "2N12345|",
+    "FÍSICA II": "4N1234|",
+    "MATEMÁTICA DISCRETA": "2N1234|",
     "AUTÔMATOS E LINGUAGENS FORMAIS": "6N1234|",
-    "METODOLOGIA DA PESQUISA E DO TRABALHO CIENTÍFICO": "6N123455|",
+    "METODOLOGIA DA PESQUISA E DO TRABALHO CIENTÍFICO": "6N1234|",
     "TEORIA DA COMPUTAÇÃO": "6T2345|",
     "TEORIA E PARADIGMAS DE LINGUAGENS DE PROGRAMAÇÃO": "2T2345|",
     "ARQUITETURA DE COMPUTADORES": "4T12345 7T5|",
     "ENGENHARIA DE SOFTWARE II": "2N12345 4N5|",
     "BANCO DE DADOS II": "5N12345 6N5|",
     "SISTEMAS OPERACIONAIS": "7N1234|",
-    "REDES DE COMPUTADORES I": "4N2345|"
+    "REDES DE COMPUTADORES I": "4N2345|",
+    "SISTEMAS DISTRIBUIDOS": "3N1234",
+    "INTRODUÇÃO AO DIREITO": "4T1234",
+    "COMPUTADOR SOCIEDADE E ÉTICA": "3T1234",
+    "TÓPICOS EM ENGENHARIA DE SOFTWARE": "2T1234",
+    "TÓPICOS EM COMPUTAÇÃO MÓVEL E SEM FIO": "6N1234",
+    "CALCULO II": "6N12345 7N5",
+    "EQUACOES DIFERENCIAIS E ORDINARIAS": "4T5 5T12345",
+    "PROBABILIDADE E ESTATISTICA": "3T2345"
+
 }
 
 # Configurar a interface do Streamlit
