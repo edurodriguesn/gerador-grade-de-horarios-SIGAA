@@ -59,32 +59,51 @@ def organizar_grade(disciplinas):
 
 # Função para gerar e exibir a tabela diretamente no Streamlit
 # Função para gerar e exibir a tabela diretamente no Streamlit
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+
+# CSS personalizado para expandir a largura
+st.markdown(
+    """
+    <style>
+        /* Aumenta a largura geral do conteúdo */
+        .main .block-container {
+            max-width: 90%;  /* Altera a largura máxima para 90% */
+            padding: 1rem;  /* Ajusta o preenchimento */
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Função para exibir a tabela como um gráfico no Streamlit
 def exibir_tabela_grade(df_grade):
     df_grade = df_grade.T
     fig = go.Figure(data=[go.Table(
         header=dict(
             values=["Horários"] + list(df_grade.columns),
             fill_color='#2D3748',
-            font=dict(color='white', size=18),  # Aumenta o tamanho da fonte
+            font=dict(color='white', size=18),
             align='center'
         ),
         cells=dict(
             values=[df_grade.index] + [df_grade[col].tolist() for col in df_grade.columns],
             fill_color=[['#F7FAFC', '#E2E8F0'] * (len(df_grade.index) // 2)],
-            font=dict(color='#2D3748', size=16),  # Aumenta o tamanho da fonte das células
+            font=dict(color='#2D3748', size=16),
             align='center',
-            height=60  # Aumenta a altura das células
+            height=60
         ))
     ])
     fig.update_layout(
-        width=1200,  # Aumenta a largura da tabela
-        height=1000,  # Ajusta a altura conforme necessário
+        width=1200,
+        height=1000,
         paper_bgcolor='white',
         plot_bgcolor='white',
         font=dict(color='#2D3748'),
-        margin=dict(l=20, r=20, t=20, b=20)  # Reduz as margens para aproveitar mais espaço
+        margin=dict(l=20, r=20, t=20, b=20)
     )
-    st.plotly_chart(fig, use_container_width=True)  # Define para usar a largura do container do Streamlit
+    st.plotly_chart(fig, use_container_width=True)
 
 
 # Função para ler as disciplinas a partir da entrada do usuário
