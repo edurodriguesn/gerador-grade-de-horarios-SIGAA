@@ -1,5 +1,6 @@
 # Arquivos e diretórios de ambientes virtuais
 venv/
+env/
 .env/
 *.env
 *.venv
